@@ -1,0 +1,40 @@
+{
+  "dataset": "311 Service Requests from 2020 to Present",
+  "source": "https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2020-to-Present/erm2-nwe9",
+  "api": "https://data.cityofnewyork.us/resource/erm2-nwe9.json",
+  "attribution": "NYC OpenData",
+  "extraction_date_utc": "2026-11-08T20:12:15.235150+00:00",
+  "row_count": 257149,
+  "date_range": {
+    "earliest_created": "2020-11-28",
+    "latest_created": "2026-10-01"
+  },
+  "columns": [
+    "unique_key",
+    "created_date",
+    "closed_date",
+    "agency",
+    "agency_name",
+    "complaint_type",
+    "descriptor",
+    "borough",
+    "incident_zip",
+    "latitude",
+    "longitude",
+    "status",
+    "resolution_description",
+    "open_data_channel_type"
+  ],
+  "dimension_tables": {
+    "boroughs": "6 distinct",
+    "agencies": "16 distinct",
+    "complaint_types": "187 distinct"
+  },
+  "limitations": [
+    "Curated snapshot from the Socrata rows.csv export (truncated ~150MB prefix of the full export due to network limits), not the complete live dataset.",
+    "Dates normalized from the CSV's US format (MM/DD/YYYY hh:mm:ss AM/PM) to ISO.",
+    "The CSV export provides State Plane X/Y coordinates rather than lat/long; latitude/longitude are NULL.",
+    "open_data_channel_type is not present in the CSV export; preserved as NULL.",
+    "Source is updated daily; this is a point-in-time snapshot."
+  ]
+}

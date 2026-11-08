@@ -1,0 +1,186 @@
+{
+  "dataset": "Brazilian E-Commerce Public Dataset by Olist",
+  "source": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
+  "mirror": "https://github.com/mara/mara-olist-ecommerce-data/tree/master/data/olist-ecommerce",
+  "attribution": "Olist (public dataset)",
+  "extraction_date_utc": "2026-11-08T19:33:38.492897+00:00",
+  "note": "Historical snapshot. Orders span approximately Sept 2016 - Oct 2018. Not live or continuously updated.",
+  "date_range": {
+    "earliest_order": "2016-09-04",
+    "latest_order": "2018-10-17"
+  },
+  "tables": {
+    "orders": {
+      "rows": 99441,
+      "columns": [
+        "order_id",
+        "customer_id",
+        "order_status",
+        "order_purchase_timestamp",
+        "order_approved_at",
+        "order_delivered_carrier_date",
+        "order_delivered_customer_date",
+        "order_estimated_delivery_date"
+      ],
+      "source_file": "olist_orders_dataset.csv"
+    },
+    "customers": {
+      "rows": 99441,
+      "columns": [
+        "customer_id",
+        "customer_unique_id",
+        "customer_zip_code_prefix",
+        "customer_city",
+        "customer_state"
+      ],
+      "source_file": "olist_customers_dataset.csv"
+    },
+    "order_items": {
+      "rows": 112650,
+      "columns": [
+        "order_id",
+        "order_item_id",
+        "product_id",
+        "seller_id",
+        "shipping_limit_date",
+        "price",
+        "freight_value"
+      ],
+      "source_file": "olist_order_items_dataset.csv"
+    },
+    "payments": {
+      "rows": 103886,
+      "columns": [
+        "order_id",
+        "payment_sequential",
+        "payment_type",
+        "payment_installments",
+        "payment_value"
+      ],
+      "source_file": "olist_order_payments_dataset.csv"
+    },
+    "reviews": {
+      "rows": 100000,
+      "columns": [
+        "review_id",
+        "order_id",
+        "review_score",
+        "review_comment_title",
+        "review_comment_message",
+        "review_creation_date",
+        "review_answer_timestamp"
+      ],
+      "source_file": "olist_order_reviews_dataset.csv"
+    },
+    "products": {
+      "rows": 32951,
+      "columns": [
+        "product_id",
+        "product_category_name",
+        "product_name_lenght",
+        "product_description_lenght",
+        "product_photos_qty",
+        "product_weight_g",
+        "product_length_cm",
+        "product_height_cm",
+        "product_width_cm"
+      ],
+      "source_file": "olist_products_dataset.csv"
+    },
+    "sellers": {
+      "rows": 3095,
+      "columns": [
+        "seller_id",
+        "seller_zip_code_prefix",
+        "seller_city",
+        "seller_state"
+      ],
+      "source_file": "olist_sellers_dataset.csv"
+    },
+    "product_category_translation": {
+      "rows": 71,
+      "columns": [
+        "product_category_name",
+        "product_category_name_english"
+      ],
+      "source_file": "product_category_name_translation.csv"
+    }
+  },
+  "primary_keys": {
+    "orders": [
+      "order_id"
+    ],
+    "customers": [
+      "customer_id"
+    ],
+    "order_items": [
+      "order_id",
+      "order_item_id"
+    ],
+    "payments": [
+      "order_id",
+      "payment_sequential"
+    ],
+    "reviews": [
+      "review_id"
+    ],
+    "products": [
+      "product_id"
+    ],
+    "sellers": [
+      "seller_id"
+    ],
+    "product_category_translation": [
+      "product_category_name"
+    ]
+  },
+  "foreign_keys": [
+    {
+      "from_table": "order_items",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "order_id"
+    },
+    {
+      "from_table": "payments",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "order_id"
+    },
+    {
+      "from_table": "reviews",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "order_id"
+    },
+    {
+      "from_table": "orders",
+      "from_column": "customer_id",
+      "to_table": "customers",
+      "to_column": "customer_id"
+    },
+    {
+      "from_table": "order_items",
+      "from_column": "product_id",
+      "to_table": "products",
+      "to_column": "product_id"
+    },
+    {
+      "from_table": "order_items",
+      "from_column": "seller_id",
+      "to_table": "sellers",
+      "to_column": "seller_id"
+    },
+    {
+      "from_table": "products",
+      "from_column": "product_category_name",
+      "to_table": "product_category_translation",
+      "to_column": "product_category_name"
+    }
+  ],
+  "limitations": [
+    "Historical data only (2016-2018); does not reflect current Olist operations.",
+    "Geolocation table excluded from V1 bundle for size (available in source).",
+    "Curated snapshot, not a complete live feed."
+  ]
+}
