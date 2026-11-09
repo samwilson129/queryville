@@ -116,7 +116,7 @@ export class DuckDbService {
     let arrowTable: any
     try {
       const conn = await this.db.connect()
-      arrowTable = conn.query(sql)
+      arrowTable = await conn.query(sql)
       conn.close()
     } catch (err) {
       throw new Error(err instanceof Error ? err.message : String(err))
@@ -126,36 +126,36 @@ export class DuckDbService {
     return this.arrowTableToResult(arrowTable, executionTimeMs)
   }
 
-  getSchema(): TableSchema[] {
+  async getSchema(): Promise<TableSchema[]> {
     if (!this.db || !this.initialized) return []
     const tables: TableSchema[] = []
     try {
-      const tableNames: string[] = this.db
+      const tableNames: string[] = (await this.db
         .query(
           "SELECT table_name FROM information_schema.tables WHERE table_schema='main' ORDER BY table_name"
-        )
+        ))
         .toArray()
         .map((r: any) => r.table_name)
 
       for (const name of tableNames) {
-        const cols = this.db
+        const cols = (await this.db
           .query(
             `SELECT column_name, data_type FROM information_schema.columns WHERE table_name='${name}' ORDER BY ordinal_position`
-          )
+          ))
           .toArray()
           .map((r: any) => ({ name: r.column_name, type: r.data_type }))
 
         let rowCount: number | undefined
         try {
-          rowCount = Number(this.db.query(`SELECT COUNT(*) AS c FROM "${name}"`).toArray()[0]?.c) || undefined
+          rowCount = Number((await this.db.query(`SELECT COUNT(*) AS c FROM "${name}"`)).toArray()[0]?.c) || undefined
         } catch {
           rowCount = undefined
         }
 
         tables.push({ name, columns: cols, rowCount })
       }
-    } catch {
-      /* best-effort */
+    } catch (err) {
+      throw new Error(`Failed to inspect database schema: ${err instanceof Error ? err.message : String(err)}`)
     }
     return tables
   }
@@ -164,14 +164,14 @@ export class DuckDbService {
     return this.execute(`SELECT * FROM "${tableName}" LIMIT ${limit}`)
   }
 
-  getNullCounts(tableName: string): Record<string, number> {
+  async getNullCounts(tableName: string): Promise<Record<string, number>> {
     if (!this.db) return {}
-    const cols = this.getSchema().find((t) => t.name === tableName)?.columns || []
+    const cols = (await this.getSchema()).find((t) => t.name === tableName)?.columns || []
     const result: Record<string, number> = {}
     for (const c of cols) {
       try {
-        const n = this.db
-          .query(`SELECT COUNT(*) AS c FROM "${tableName}" WHERE "${c.name}" IS NULL`)
+        const n = (await this.db
+          .query(`SELECT COUNT(*) AS c FROM "${tableName}" WHERE "${c.name}" IS NULL`))
           .toArray()[0]?.c
         result[c.name] = Number(n) || 0
       } catch {
