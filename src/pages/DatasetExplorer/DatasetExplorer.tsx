@@ -15,16 +15,14 @@ export function DatasetExplorer() {
   const [nullCounts, setNullCounts] = useState<Record<string, number>>({})
   const [error, setError] = useState<string | null>(null)
 
-  if (!roadmapId || !roadmap) {
-    return <div className="p-10 text-muted">Dataset not found.</div>
-  }
-
   useEffect(() => {
     const load = async () => {
+      if (!roadmapId) return
       try {
         await challengeService.prepareRoadmap(roadmapId)
-        setTables(challengeService.getSchema())
-        if (tables.length > 0) setSelected(tables[0].name)
+        const schema = await challengeService.getSchema()
+        setTables(schema)
+        setSelected((current) => current ?? schema[0]?.name ?? null)
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
       }
@@ -38,7 +36,7 @@ export function DatasetExplorer() {
       try {
         const s = await challengeService.getSample(selected, 10)
         setSample({ columns: s.columns, rows: s.rows })
-        setNullCounts(challengeService.getNullCounts(selected))
+        setNullCounts(await challengeService.getNullCounts(selected))
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
       }
@@ -95,6 +93,12 @@ export function DatasetExplorer() {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div role="alert" className="mb-6 rounded-xl border border-danger/30 bg-danger/5 p-4">
+          <p className="text-sm text-danger">{error}</p>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-12 gap-6">
         {/* Table list */}
