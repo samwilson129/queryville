@@ -6,12 +6,19 @@
  * exposed as read-only tables. The instance is destroyed/recreated when the
  * user switches roadmaps so each challenge environment contains only the
  * relevant roadmap tables.
+ *
+ * DuckDB-WASM assets (wasm + worker) are loaded from the jsdelivr CDN at
+ * runtime rather than committed to the repo, because Cloudflare Pages enforces
+ * a 25 MiB per-file size limit and duckdb-mvp.wasm is ~39 MiB.
  */
 
 import { AsyncDuckDB, createWorker, ConsoleLogger } from "@duckdb/duckdb-wasm"
 
-const WASM_URL = "/dwasm/duckdb-mvp.wasm"
-const WORKER_URL = "/dwasm/duckdb-browser-mvp.worker.js"
+const DUCKDB_WASM_VERSION = "1.33.1-dev57.0"
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${DUCKDB_WASM_VERSION}/dist`
+
+const WASM_URL = `${CDN_BASE}/duckdb-mvp.wasm`
+const WORKER_URL = `${CDN_BASE}/duckdb-browser-mvp.worker.js`
 
 const ROADMAP_FILES: Record<string, string[]> = {
   city: ["service_requests", "boroughs", "agencies", "complaint_types"],

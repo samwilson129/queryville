@@ -27,5 +27,8 @@ dist-ssr
 public/datasets/commerce/*.csv
 public/datasets/city/source_rows.csv
 
+# DuckDB-WASM assets loaded from jsdelivr CDN at runtime (avoids 25 MiB Pages file limit)
+public/dwasm/
+
 # Data prep logs
 scripts/**/run.log
